@@ -247,14 +247,37 @@ fun SpeedoMeter(
 
 
                         val text = "10" // You can replace this with your desired text
+
                         val textPaint = android.graphics.Paint().apply {
                             color = Color.Black.toArgb()
-                            textSize = 16f // Adjust text size as needed
+                            textSize = 30f // Adjust text size as needed
                         }
 
 
                         canvas.save()
-                        if(counter>20) {
+                        if(counter>40) {
+                            val marginFromTop = 60f // Adjust margin from top as needed
+                            val marginRight = 40f // Adjust margin from right as needed
+                            val textWidth = textPaint.measureText(text)
+                            val textX = lineEndX + textWidth / 2 + marginRight // Center the text horizontally with right margin
+                            val textY = lineEndY + 10f - 15f // Position the text to the left of the line and move it up by 20f
+
+                            canvas.save()
+                            canvas.rotate(180f, textX, textY)
+                            canvas.nativeCanvas.drawText(text, textX, textY, textPaint) // No need to subtract marginRight from textX
+                            canvas.restore()
+                        }
+                        else if(counter<=20&&counter>10) {
+                            val marginFromTop = 70f // Adjust margin from top as needed
+                            val marginLeft =0f // Adjust margin from left as needed
+                            val textX = lineEndX - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
+                            val textY = lineEndY + 10f // Position the text to the left of the line
+
+                            canvas.rotate(-90f, textX, textY)
+                            canvas.nativeCanvas.drawText(text, textX - marginLeft, textY, textPaint) // Subtract marginLeft from textX to add left margin
+
+                        }
+                       else if(counter>20) {
                             val marginFromTop = 60f // Adjust margin from top as needed
                             val marginLeft =0f // Adjust margin from left as needed
                             val textX = lineEndX - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin

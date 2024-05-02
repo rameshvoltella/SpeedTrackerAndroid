@@ -282,30 +282,29 @@ fun SpeedoMeter2(
                 )
 
                 drawCircle(mainColor, 50f, centerOffset)
-                drawCircle(androidx.compose.ui.graphics.Color.White, 25f, centerOffset)
-                drawCircle(androidx.compose.ui.graphics.Color.Black, 20f, centerOffset)
+                drawCircle(Color.White, 25f, centerOffset)
+                drawCircle(Color.Black, 20f, centerOffset)
 
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
-                    val lineEndX = w / 2f + (w / 2f) * cos(Math.toRadians(degrees.toDouble()))
-                    val lineEndY = h / 2f + (h / 2f) * sin(Math.toRadians(degrees.toDouble()))
-
+                    val lineEndX = 80f
                     paint.color = mainColor
                     val lineStartX = if (counter % 5 == 0) {
                         paint.strokeWidth = 3f
-                        lineEndX - (w / 10f)
+                        0f
                     } else {
                         paint.strokeWidth = 1f
-                        lineEndX - (w / 20f)
+                        lineEndX * .2f
                     }
-
+                    canvas.save()
+                    canvas.rotate(degrees.toFloat(), w / 2f, h / 2f)
                     canvas.drawLine(
-                        Offset(lineStartX.toFloat(), lineEndY.toFloat()),
-                        Offset(lineEndX.toFloat(), lineEndY.toFloat()),
+                        Offset(lineStartX, h / 2f),
+                        Offset(lineEndX, h / 2f),
                         paint
                     )
 
                     if (counter == progress) {
-                        paint.color = androidx.compose.ui.graphics.Color.Black
+                        paint.color = Color.Black
                         canvas.drawPath(
                             Path().apply {
                                 moveTo(w / 2, (h / 2) - 5)
@@ -317,6 +316,7 @@ fun SpeedoMeter2(
                             paint
                         )
                     }
+                    canvas.restore()
                 }
             }
         }

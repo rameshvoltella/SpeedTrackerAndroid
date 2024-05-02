@@ -208,7 +208,7 @@ private const val MIN_ANGLE = 220f
 @Composable
 fun SpeedometerPreview() {
     Speedometer(
-        Modifier.size(700.dp),
+        Modifier.size(300.dp),
         currentSpeed = mutableStateOf(900)
     )
 }

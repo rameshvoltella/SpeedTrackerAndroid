@@ -35,7 +35,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.rotate
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
@@ -185,6 +187,7 @@ fun SpeedoMeter(
 
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
                     val lineEndX = 200f
+                    val lineEndY = h / 2f // Since line is horizontal, lineEndY is the same as the center of the canvas vertically
                     paint.color = mainColor
 //                    val lineStartX = if (counter % 5 == 0) {
 //                        paint.strokeWidth = 3f
@@ -209,14 +212,79 @@ fun SpeedoMeter(
                         paint
                     )
 
+                    /*To right*/
+                /*    if (counter % 5 == 0) {
+                        val text = "Your Text Here" // You can replace this with your desired text
+                        val textPaint = android.graphics.Paint().apply {
+                            color = Color.Black.toArgb()
+                            textSize = 16f // Adjust text size as needed
+                        }
+
+                        val textWidth = textPaint.measureText(text)
+                        val textX = lineEndX + 10f // Position the text to the right of the line
+                        val marginFromTop = 12f // Adjust margin as needed
+                        val textY = lineEndY - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
+
+                        canvas.nativeCanvas.drawText(text, textX, textY, textPaint)
+                    }*/
+                    /*To left*/
+
+                  /*  if (counter % 5 == 0) {
+                        val text = "Your Text Here" // You can replace this with your desired text
+                        val textPaint = android.graphics.Paint().apply {
+                            color = Color.Black.toArgb()
+                            textSize = 16f // Adjust text size as needed
+                        }
+
+                        val textWidth = textPaint.measureText(text)
+                        val marginFromTop = 10f // Adjust margin as needed
+                        val textX = lineEndX - textWidth - 10f // Position the text to the left of the line
+                        val textY = lineEndY - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
+
+                        canvas.nativeCanvas.drawText(text, textX, textY, textPaint)
+                    }*/
+                    if (counter % 5 == 0) {
+
+
+                        val text = "10" // You can replace this with your desired text
+                        val textPaint = android.graphics.Paint().apply {
+                            color = Color.Black.toArgb()
+                            textSize = 16f // Adjust text size as needed
+                        }
+
+
+                        canvas.save()
+                        if(counter>20) {
+                            val marginFromTop = 60f // Adjust margin from top as needed
+                            val marginLeft =0f // Adjust margin from left as needed
+                            val textX = lineEndX - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
+                            val textY = lineEndY + 10f // Position the text to the left of the line
+
+                            canvas.rotate(-90f, textX, textY)
+                            canvas.nativeCanvas.drawText(text, textX - marginLeft, textY, textPaint) // Subtract marginLeft from textX to add left margin
+
+                        }
+                        else
+                        {
+                            val marginFromTop = 80f // Adjust margin from top as needed
+                            val marginLeft =40f // Adjust margin from left as needed
+                            val textX = lineEndX - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
+                            val textY = lineEndY + 10f // Position the text to the left of the line
+
+                            canvas.nativeCanvas.drawText(text, textX - marginLeft, textY, textPaint) // Subtract marginLeft from textX to add left margin
+
+                        }
+                        canvas.restore()
+                    }
+
                     if (counter == progress) {
                         paint.color = androidx.compose.ui.graphics.Color.Black
                         canvas.drawPath(
                             Path().apply {
-                                moveTo(w / 2, (h / 2) - 5)
-                                lineTo(w / 2, (h / 2) + 5)
-                                lineTo(w / 4f, h / 2)
-                                lineTo(w / 2, (h / 2) - 5)
+                                moveTo(w / 2, (h / 2) - 15)
+                                lineTo(w / 2, (h / 2) + 15)
+                                lineTo(w / 5.5f, h / 2)
+                                lineTo(w / 2, (h / 2) - 15)
                                 close()
                             },
                             paint
@@ -228,7 +296,10 @@ fun SpeedoMeter(
         }
     )
 }
-
+//moveTo(w *0.6f, (h *0.6f) - 5)
+//lineTo(w *0.6f, (h *0.6f) + 5)
+//lineTo(w / 0.8f, h *0.6f)
+//lineTo(w *0.6f, (h*0.6f) - 5)
 @Composable
 fun SpeedoMeter2(
     progress: Int

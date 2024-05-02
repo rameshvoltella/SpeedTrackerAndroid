@@ -80,7 +80,7 @@ fun MySpeedometerScreen() {
 @Composable
 fun GreetingPreview() {
     SpeedTrackerTheme {
-        SpeedoMeterScreen()
+        SpeedoMeter(10)
     }
 }
 
@@ -146,7 +146,7 @@ fun SpeedoMeter(
                 val w = drawContext.size.width
                 val h = drawContext.size.height
                 val centerOffset = Offset(w / 2f, h / 2f)
-                val quarterOffset = Offset(w / 4f, h / 4f)
+                val quarterOffset = Offset(w / 20f, h / 20f)
 
                 val (mainColor, secondaryColor) = when {
                     progress < 20 -> Color(0xFFD32F2F) to Color(0xFFFFCDD2)
@@ -156,7 +156,7 @@ fun SpeedoMeter(
                 val paint = Paint().apply {
                     color = mainColor
                 }
-                val centerArcSize = Size(w / 2f, h / 2f)
+                val centerArcSize = Size(w *0.9f, h *0.9f)
                 val centerArcStroke = Stroke(20f, 0f, StrokeCap.Round)
 
                 drawArc(
@@ -179,12 +179,12 @@ fun SpeedoMeter(
                     style = centerArcStroke
                 )
 
-//                drawCircle(mainColor, 50f, centerOffset)
-//                drawCircle(androidx.compose.ui.graphics.Color.White, 25f, centerOffset)
-//                drawCircle(androidx.compose.ui.graphics.Color.Black, 20f, centerOffset)
+                drawCircle(mainColor, 50f, centerOffset)
+                drawCircle(androidx.compose.ui.graphics.Color.White, 25f, centerOffset)
+                drawCircle(androidx.compose.ui.graphics.Color.Black, 20f, centerOffset)
 
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
-                    val lineEndX = 270f
+                    val lineEndX = 200f
                     paint.color = mainColor
 //                    val lineStartX = if (counter % 5 == 0) {
 //                        paint.strokeWidth = 3f
@@ -223,7 +223,6 @@ fun SpeedoMeter(
                         )
                     }
                     canvas.restore()
-                    
                 }
             }
         }

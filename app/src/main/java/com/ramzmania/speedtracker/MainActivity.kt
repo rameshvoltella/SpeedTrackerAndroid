@@ -1,6 +1,7 @@
 package com.ramzmania.speedtracker
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
@@ -40,16 +40,14 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.rotate
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
-import com.ramzmania.speedtracker.views.SpeedometerWrapper
+import com.ramzmania.speedtracker.views.SpeedometerComposeView
 import kotlinx.coroutines.launch
-import kotlin.math.cos
-import kotlin.math.sin
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,265 +59,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SpeedoMeterScreen3()
+                    SpeedoMeterMainScreen()
                 }
             }
         }
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-@Composable
-fun MySpeedometerScreen() {
-    var currentSpeed by remember { mutableStateOf(80) }
-
-
-}
-
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     SpeedTrackerTheme {
-        SpeedoMeterScreen3()
+        SpeedoMeterMainScreen()
     }
 }
 
 @Composable
-fun SpeedoMeterScreen() {
-    var targetValue by remember { mutableStateOf(0f) }
-    val progress = remember(targetValue) { Animatable(initialValue = 0f) }
-    val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Slider(
-            value = targetValue,
-            onValueChange = { targetValue = it }
-        )
-
-        val intValue = targetValue * 55
-        Text(
-            text = "${intValue.toInt()}"
-        )
-
-        Button(
-            onClick = {
-                scope.launch {
-                    progress.animateTo(
-                        targetValue = intValue,
-                        animationSpec = tween(
-                            durationMillis = 1000,
-                            easing = FastOutLinearInEasing
-                        )
-                    )
-                }
-            }
-        ) {
-            Text(text = "Go")
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-
-        SpeedoMeter(progress = progress.value.toInt())
-    }
-}
-
-@Composable
-fun SpeedoMeter(
-    progress: Int
-) {
-    val arcDegrees = 275
-    val startArcAngle = 135f
-    val startStepAngle = -45
-    val numberOfMarkers = 55
-    val degreesMarkerStep = arcDegrees / numberOfMarkers
-
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f),
-        onDraw = {
-            drawIntoCanvas { canvas ->
-                val w = drawContext.size.width
-                val h = drawContext.size.height
-                val centerOffset = Offset(w / 2f, h / 2f)
-                val quarterOffset = Offset(w / 20f, h / 20f)
-
-                val (mainColor, secondaryColor) = when {
-                    progress < 20 -> Color(0xFFD32F2F) to Color(0xFFFFCDD2)
-                    progress < 40 -> Color(0xFFF57C00) to Color(0xFFFFE0B2)
-                    else -> Color(0xFF388E3C) to Color(0xFFC8E6C9)
-                }
-                val paint = Paint().apply {
-                    color = mainColor
-                }
-                val centerArcSize = Size(w *0.9f, h *0.9f)
-                val centerArcStroke = Stroke(20f, 0f, StrokeCap.Round)
-
-                drawArc(
-                    secondaryColor,
-                    startArcAngle,
-                    arcDegrees.toFloat(),
-                    false,
-                    topLeft = quarterOffset,
-                    size = centerArcSize,
-                    style = centerArcStroke
-                )
-
-                drawArc(
-                    mainColor,
-                    startArcAngle,
-                    (degreesMarkerStep * progress).toFloat(),
-                    false,
-                    topLeft = quarterOffset,
-                    size = centerArcSize,
-                    style = centerArcStroke
-                )
-
-                drawCircle(mainColor, 50f, centerOffset)
-                drawCircle(androidx.compose.ui.graphics.Color.White, 25f, centerOffset)
-                drawCircle(androidx.compose.ui.graphics.Color.Black, 20f, centerOffset)
-
-                for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
-                    val lineEndX = 100f
-                    val lineEndY = h / 2f // Since line is horizontal, lineEndY is the same as the center of the canvas vertically
-                    paint.color = mainColor
-//                    val lineStartX = if (counter % 5 == 0) {
-//                        paint.strokeWidth = 3f
-//                        0f
-//                    } else {
-//                        paint.strokeWidth = 1f
-//                        lineEndX * .2f
-//                    }
-
-                    val lineStartX = if (counter % 5 == 0) {
-                        paint.strokeWidth = 3f
-                        lineEndX - 15f
-                    } else {
-                        paint.strokeWidth = 1f
-                        lineEndX - 7.5f
-                    }
-                    canvas.save()
-                    canvas.rotate(degrees.toFloat(), w / 2f, h / 2f)
-                    canvas.drawLine(
-                        Offset(lineStartX, h / 2f),
-                        Offset(lineEndX, h / 2f),
-                        paint
-                    )
-
-                    /*To right*/
-                /*    if (counter % 5 == 0) {
-                        val text = "Your Text Here" // You can replace this with your desired text
-                        val textPaint = android.graphics.Paint().apply {
-                            color = Color.Black.toArgb()
-                            textSize = 16f // Adjust text size as needed
-                        }
-
-                        val textWidth = textPaint.measureText(text)
-                        val textX = lineEndX + 10f // Position the text to the right of the line
-                        val marginFromTop = 12f // Adjust margin as needed
-                        val textY = lineEndY - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
-
-                        canvas.nativeCanvas.drawText(text, textX, textY, textPaint)
-                    }*/
-                    /*To left*/
-
-                  /*  if (counter % 5 == 0) {
-                        val text = "Your Text Here" // You can replace this with your desired text
-                        val textPaint = android.graphics.Paint().apply {
-                            color = Color.Black.toArgb()
-                            textSize = 16f // Adjust text size as needed
-                        }
-
-                        val textWidth = textPaint.measureText(text)
-                        val marginFromTop = 10f // Adjust margin as needed
-                        val textX = lineEndX - textWidth - 10f // Position the text to the left of the line
-                        val textY = lineEndY - textPaint.textSize / 2 + marginFromTop // Center the text vertically with margin
-
-                        canvas.nativeCanvas.drawText(text, textX, textY, textPaint)
-                    }*/
-                    if (counter % 5 == 0) {
-
-
-                        val text = "10" // You can replace this with your desired text
-
-                        val textPaint = android.graphics.Paint().apply {
-                            color = Color.Black.toArgb()
-                            textSize = 30f // Adjust text size as needed
-                        }
-
-
-                        canvas.save()
-                        val marginFromTop: Float
-                        val marginLeft: Float
-                        val textX: Float
-                        val textY = lineEndY + 10f
-
-                        when {
-                            counter > 40 -> {
-                                marginFromTop = 60f
-                                marginLeft = 0f
-                                textX = lineEndX - textPaint.textSize / 2 + marginFromTop
-                                canvas.rotate(-90f, textX, textY)
-                            }
-                            counter in 11..20 -> {
-                                marginFromTop = 70f
-                                marginLeft = 0f
-                                textX = lineEndX - textPaint.textSize / 2 + marginFromTop
-                                canvas.rotate(-90f, textX, textY)
-                            }
-                            counter > 20 -> {
-                                marginFromTop = 60f
-                                marginLeft = 0f
-                                textX = lineEndX - textPaint.textSize / 2 + marginFromTop
-                                canvas.rotate(-90f, textX, textY)
-                            }
-                            else -> {
-                                marginFromTop = 80f
-                                marginLeft = 40f
-                                textX = lineEndX - textPaint.textSize / 2 + marginFromTop
-                            }
-                        }
-
-                        canvas.nativeCanvas.drawText(text, textX - marginLeft, textY, textPaint)
-                        canvas.restore()
-                    }
-
-                    if (counter == progress) {
-                        paint.color = androidx.compose.ui.graphics.Color.Black
-                        canvas.drawPath(
-                            Path().apply {
-                                moveTo(w / 2, (h / 2) - 15)
-                                lineTo(w / 2, (h / 2) + 15)
-                                lineTo(w / 5.5f, h / 2)
-                                lineTo(w / 2, (h / 2) - 15)
-                                close()
-                            },
-                            paint
-                        )
-                    }
-                    canvas.restore()
-                }
-            }
-        }
-    )
-}
-//moveTo(w *0.6f, (h *0.6f) - 5)
-//lineTo(w *0.6f, (h *0.6f) + 5)
-//lineTo(w / 0.8f, h *0.6f)
-//lineTo(w *0.6f, (h*0.6f) - 5)
-@Composable
-fun SpeedoMeter2(
+fun SpeedoMeterTest(
     progress: Int
 ) {
     val arcDegrees = 275
@@ -413,7 +169,7 @@ fun SpeedoMeter2(
 }
 
 @Composable
-fun SpeedoMeterScreen3() {
+fun SpeedoMeterMainScreen() {
     var targetValue by remember { mutableStateOf(0f) }
     val progress = remember(targetValue) { Animatable(initialValue = 0f) }
     val scope = rememberCoroutineScope()
@@ -458,11 +214,15 @@ fun SpeedoMeterScreen3() {
         // Center the SpeedoMeter using a Box with specified size
         Box(
             modifier = Modifier
-                .width(800.dp)
-                .height(800.dp)
+                .width(400.dp)
+                .height(400.dp)
                 .wrapContentSize(Alignment.Center)
         ) {
-            SpeedoMeter(progress = progress.value.toInt())
+            Log.d("sadakk",""+progress.value.toInt())
+            SpeedometerComposeView(progress = progress.value.toInt(), needleColor = colorResource(id = R.color.purple_200), speedTextColor = colorResource(
+                id = R.color.teal_200,
+            ),movingSpeedTextColor= Color.Red
+            )
         }
     }
 }

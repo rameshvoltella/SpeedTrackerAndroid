@@ -7,6 +7,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,6 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -56,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SpeedoMeterScreen()
+                    SpeedoMeterScreen3()
                 }
             }
         }
@@ -82,7 +87,7 @@ fun MySpeedometerScreen() {
 @Composable
 fun GreetingPreview() {
     SpeedTrackerTheme {
-        SpeedoMeter(10)
+        SpeedoMeterScreen3()
     }
 }
 
@@ -405,4 +410,59 @@ fun SpeedoMeter2(
             }
         }
     )
+}
+
+@Composable
+fun SpeedoMeterScreen3() {
+    var targetValue by remember { mutableStateOf(0f) }
+    val progress = remember(targetValue) { Animatable(initialValue = 0f) }
+    val scope = rememberCoroutineScope()
+
+    // Define the desired size for the SpeedoMeter
+    val speedoMeterSize = 300.dp
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Slider(
+            value = targetValue,
+            onValueChange = { targetValue = it }
+        )
+
+        val intValue = targetValue * 55
+        Text(
+            text = "${intValue.toInt()}"
+        )
+
+        Button(
+            onClick = {
+                scope.launch {
+                    progress.animateTo(
+                        targetValue = intValue,
+                        animationSpec = tween(
+                            durationMillis = 1000,
+                            easing = FastOutLinearInEasing
+                        )
+                    )
+                }
+            }
+        ) {
+            Text(text = "Go")
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Center the SpeedoMeter using a Box with specified size
+        Box(
+            modifier = Modifier
+                .width(500.dp)
+                .height(500.dp)
+                .wrapContentSize(Alignment.Center)
+        ) {
+            SpeedoMeter(progress = progress.value.toInt())
+        }
+    }
 }

@@ -2,6 +2,10 @@ package com.ramzmania.speedtracker
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,7 +45,14 @@ fun EqualDivide()
     var targetValue by remember { mutableStateOf(0f) }
     val progress = remember(targetValue) { Animatable(initialValue = 0f) }
     val scope = rememberCoroutineScope()
-
+    val offsetY = rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000), // Adjust duration as needed
+            repeatMode = RepeatMode.Reverse
+        )
+    )
     Column(modifier = Modifier.fillMaxSize()) {
 
         Box(
@@ -70,6 +82,38 @@ fun EqualDivide()
                 }
             ) {
                 Text(text = "Go")
+            }
+
+            Button(modifier = Modifier.padding(40.dp),
+                onClick = {
+                    scope.launch {
+                        progress.animateTo(
+                            targetValue = 10f,
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutLinearInEasing
+                            )
+                        )
+                    }
+                }
+            ) {
+                Text(text = "Go10")
+            }
+
+            Button(modifier = Modifier.padding(80.dp),
+                onClick = {
+                    scope.launch {
+                        progress.animateTo(
+                            targetValue = 30f,
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutLinearInEasing
+                            )
+                        )
+                    }
+                }
+            ) {
+                Text(text = "Go30")
             }
         }
         Box(
@@ -117,18 +161,27 @@ fun EqualDivide()
                             .background(color = Color.White)
                     )
                 }
-
-                Image(
-
-                    painter = painterResource(id = R.drawable.car),
-                    contentDescription = "Your Image",
+                Box(
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp)
-                        .align(Alignment.Center)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier.offset(y = offsetY.value.dp)
+                    ) {
+                        Image(
 
-                )
+                            painter = painterResource(id = R.drawable.car),
+                            contentDescription = "Your Image",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .align(Alignment.Center)
 
+                        )
+                    }
+                }
                 /*modifier = Modifier
                     .width(400.dp)
                     .height(300.dp)

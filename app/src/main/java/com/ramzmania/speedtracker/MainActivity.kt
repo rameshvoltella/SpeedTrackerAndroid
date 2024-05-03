@@ -191,7 +191,7 @@ fun SpeedoMeter(
                 drawCircle(androidx.compose.ui.graphics.Color.Black, 20f, centerOffset)
 
                 for ((counter, degrees) in (startStepAngle..(startStepAngle + arcDegrees) step degreesMarkerStep).withIndex()) {
-                    val lineEndX = 200f
+                    val lineEndX = 100f
                     val lineEndY = h / 2f // Since line is horizontal, lineEndY is the same as the center of the canvas vertically
                     paint.color = mainColor
 //                    val lineStartX = if (counter % 5 == 0) {
@@ -458,8 +458,8 @@ fun SpeedoMeterScreen3() {
         // Center the SpeedoMeter using a Box with specified size
         Box(
             modifier = Modifier
-                .width(500.dp)
-                .height(500.dp)
+                .width(800.dp)
+                .height(800.dp)
                 .wrapContentSize(Alignment.Center)
         ) {
             SpeedoMeter(progress = progress.value.toInt())

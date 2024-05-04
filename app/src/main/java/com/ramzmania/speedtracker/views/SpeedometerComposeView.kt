@@ -219,7 +219,8 @@ fun SpeedometerComposeView(
                 val text = calculateRangeValue(progress,(1.0f * 55).toInt(),speedoMeterRange).toString()+" km/Hr" // Replace with your desired text
                 val textPaint = android.graphics.Paint().apply {
                     color = movingSpeedTextColor.toArgb()
-                    textSize = 40f // Adjust text size as needed
+                    textSize = 80f // Adjust text size as needed
+                    isFakeBoldText = true // Make the text bold
                 }
                 val textWidth = textPaint.measureText(text)
                 val textX = (drawContext.size.width - textWidth) / 2 // Center the text horizontally

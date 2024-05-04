@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -201,15 +202,28 @@ fun EqualDivide() {
                 .align(Alignment.CenterHorizontally)
                 .background(color = colorResource(id = R.color.background_blue))
         ) {
-            SpeedometerComposeView(
-                progress = progress.value.toInt(),
-                needleColor = Color.Red,
-                speedTextColor = colorResource(
-                    id = R.color.white,
-                ),
-                movingSpeedTextColor = Color.Red
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .wrapContentSize(Alignment.Center)
 
+            ) {
+                SpeedometerComposeView(
+                    progress = progress.value.toInt(),
+                    needleColor = Color.Red,
+                    speedTextColor = colorResource(
+                        id = R.color.white,
+                    ),
+                    movingSpeedTextColor = Color.White
+                )
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(90.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = speedtext, fontSize = 20.sp)
+                }
+            }
 
             /*Button(
                 onClick = {
@@ -227,12 +241,7 @@ fun EqualDivide() {
                 Text(text = "Go")
             }*/
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                Text(text = speedtext)
-            }
+
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)
@@ -310,6 +319,41 @@ fun EqualDivide() {
                             .background(color = roadLineColor)
                     )
 
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(30.dp)
+                            .padding(8.dp)
+                            .background(color = roadLineColor)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(30.dp)
+                            .padding(8.dp)
+                            .background(color = roadLineColor)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(30.dp)
+                            .padding(8.dp)
+                            .background(color = roadLineColor)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(30.dp)
+                            .padding(8.dp)
+                            .background(color = roadLineColor)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(30.dp)
+                            .padding(8.dp)
+                            .background(color = roadLineColor)
+                    )
                     Box(
                         modifier = Modifier
                             .weight(1f)

@@ -2,6 +2,7 @@ package com.ramzmania.speedtracker
 
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
 import com.ramzmania.speedtracker.views.SpeedometerComposeView
@@ -54,6 +56,9 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Keep screen on
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContent {
             SpeedTrackerTheme {
                 // A surface container using the 'background' color from the theme
@@ -238,7 +243,7 @@ fun SpeedoMeterMainScreen() {
             Log.d("sadakk",""+progress.value.toInt())
             SpeedometerComposeView(progress = progress.value.toInt(), needleColor = colorResource(id = R.color.purple_200), speedTextColor = colorResource(
                 id = R.color.teal_200,
-            ),movingSpeedTextColor= Color.Red
+            ),movingSpeedTextColor= Color.White
             )
         }
     }

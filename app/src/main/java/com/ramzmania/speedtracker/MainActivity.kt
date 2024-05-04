@@ -25,6 +25,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
 import com.ramzmania.speedtracker.views.SpeedometerComposeView
 import kotlinx.coroutines.launch
@@ -55,6 +57,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SpeedTrackerTheme {
                 // A surface container using the 'background' color from the theme
+                SetStatusBarColor(color = colorResource(id = R.color.background_blue))
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -65,7 +68,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun SetStatusBarColor() {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(colorResource(id = R.color.background_blue))
+    // Your content here
+    EqualDivide()
+}
 
+@Composable
+fun SetStatusBarColor(color: Color) {
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(color)
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {

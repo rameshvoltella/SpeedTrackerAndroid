@@ -3,6 +3,7 @@ package com.ramzmania.speedtracker
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -15,13 +16,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -32,12 +36,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -49,6 +55,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun EqualDivide() {
+
     val context = LocalContext.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(
@@ -58,7 +65,13 @@ fun EqualDivide() {
 //    val speedProgress = remember { mutableStateOf(0) }
     var targetValue by remember { mutableStateOf(0f) }
     var progress = remember(targetValue) { Animatable(initialValue = 0f) }
+    var targetAnimationValue by remember {
+        mutableStateOf(10f)
+    }
     val scope = rememberCoroutineScope()
+    var speedMessage by remember {
+        mutableStateOf("Pedal..")
+    }
     var speedtext by remember {
         mutableStateOf("0km")
     }
@@ -68,18 +81,12 @@ fun EqualDivide() {
     }
     val offsetY = rememberInfiniteTransition(label = "animationcar").animateFloat(
         initialValue = 0f,
-        targetValue = 10f,
+        targetValue = targetAnimationValue,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000), // Adjust duration as needed
             repeatMode = RepeatMode.Reverse
         ), label = "animationcar"
     )
-
-//    LaunchedEffect(key1 = speedtext)
-//    {
-//
-//    }
-
 
     DisposableEffect(Unit) {
         val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
@@ -90,6 +97,7 @@ fun EqualDivide() {
         val locationCallback = object : LocationCallback() {
             @SuppressLint("SetTextI18n")
             override fun onLocationResult(locationResult: LocationResult) {
+                Log.d("localoo","yess")
                 for (location in locationResult.locations) {
                     // Calculate distance if needed
 
@@ -113,19 +121,27 @@ fun EqualDivide() {
                         if(data<1)
                         {
                             roadLineColor= Color.White
+                            speedMessage="Pedal.."
+                            targetAnimationValue=10f
                         }
                         else if(speedKmH<20)
                         {
                             roadLineColor= Color(0xFF388E3C)
+                            speedMessage="Nice.."
+                            targetAnimationValue=30f
 
                         }
                         else if(speedKmH<40)
                         {
                             roadLineColor= Color(0xFFF57C00)
+                            speedMessage="Watch out.."
+                            targetAnimationValue=40f
 
                         }else
                         {
                             roadLineColor= Color(0xFFD32F2F)
+                            speedMessage="Rash..."
+                            targetAnimationValue=50f
 
                         }
 
@@ -171,6 +187,8 @@ fun EqualDivide() {
         // Cleanup when not needed
         onDispose {
             fusedLocationClient.removeLocationUpdates(locationCallback)
+            Log.d("localoo","over")
+
         }
     }
     Column(modifier = Modifier.fillMaxSize()) {
@@ -214,6 +232,44 @@ fun EqualDivide() {
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(text = speedtext)
+            }
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(Color.White)
+                .align(
+                    Alignment.BottomCenter
+
+                )) {
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .fillMaxHeight()
+                        .background(color = colorResource(id = R.color.white))
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1.8f)
+                        .fillMaxHeight()
+                        .background(
+                            color = colorResource(id = R.color.background_blue),
+                            shape = RoundedCornerShape(
+                                0.dp,
+                                0.dp,
+                                16.dp,
+                                16.dp
+                            ) // Adjust the corner radius as needed
+                        ), contentAlignment = Alignment.Center
+                ){
+                    Text(text = speedMessage, color = colorResource(id = R.color.white), fontSize = 20.sp)
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .fillMaxHeight()
+                        .background(color = colorResource(id = R.color.white))
+                )
             }
         }
 

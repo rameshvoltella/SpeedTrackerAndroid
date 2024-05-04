@@ -65,14 +65,22 @@ fun EqualDivide() {
     var targetValue by remember { mutableStateOf(0f) }
     var progress = remember(targetValue) { Animatable(initialValue = 0f) }
     val scope = rememberCoroutineScope()
-    val offsetY = rememberInfiniteTransition().animateFloat(
+    var speedtext by remember {
+        mutableStateOf("0km")
+    }
+    val offsetY = rememberInfiniteTransition(label = "animationcar").animateFloat(
         initialValue = 0f,
         targetValue = 10f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000), // Adjust duration as needed
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = "animationcar"
     )
+
+//    LaunchedEffect(key1 = speedtext)
+//    {
+//
+//    }
 
 
     DisposableEffect(Unit) {
@@ -87,9 +95,12 @@ fun EqualDivide() {
                 for (location in locationResult.locations) {
                     // Calculate distance if needed
 
+                    val speed = location.speed // Speed in meters/second
 
                     // Calculate speed
-                    val speedKmH = location.speed * 3.6 // Convert speed to km/h
+                    val speedKmH = speed * 3.6 // Convert speed to km/h
+
+                    speedtext=String.format("%.1f", speed * 3.6)+" km/hr"
                     if (speedKmH <= 250) {
                             val data = calculateSeekBarValue(speedKmH, 250, 55)
                             scope.launch {
@@ -163,6 +174,7 @@ fun EqualDivide() {
                 movingSpeedTextColor = Color.Red
             )
 
+
             /*Button(
                 onClick = {
                     scope.launch {
@@ -179,8 +191,14 @@ fun EqualDivide() {
                 Text(text = "Go")
             }*/
 
-
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(text = speedtext)
+            }
         }
+
         Box(
             modifier = Modifier
                 .weight(1f)

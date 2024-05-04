@@ -3,7 +3,6 @@ package com.ramzmania.speedtracker
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -23,11 +22,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,10 +45,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.ramzmania.speedtracker.views.SpeedometerComposeView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun EqualDivide() {
@@ -67,6 +61,10 @@ fun EqualDivide() {
     val scope = rememberCoroutineScope()
     var speedtext by remember {
         mutableStateOf("0km")
+    }
+
+    var roadLineColor by remember {
+        mutableStateOf(Color.White)
     }
     val offsetY = rememberInfiniteTransition(label = "animationcar").animateFloat(
         initialValue = 0f,
@@ -112,6 +110,24 @@ fun EqualDivide() {
                                     )
                                 )
                             }
+                        if(data<1)
+                        {
+                            roadLineColor= Color.White
+                        }
+                        else if(speedKmH<20)
+                        {
+                            roadLineColor= Color(0xFF388E3C)
+
+                        }
+                        else if(speedKmH<40)
+                        {
+                            roadLineColor= Color(0xFFF57C00)
+
+                        }else
+                        {
+                            roadLineColor= Color(0xFFD32F2F)
+
+                        }
 
 //                        progress.value= data.toFloat()
 //                        CoroutineScope(Dispatchers.IO).launch {
@@ -125,6 +141,8 @@ fun EqualDivide() {
 //                            )
 //                        }
                     }
+
+
 
 
                     // Update UI based on speed
@@ -226,14 +244,14 @@ fun EqualDivide() {
                             .weight(1f)
                             .width(30.dp)
                             .padding(8.dp)
-                            .background(color = Color.White)
+                            .background(color = roadLineColor)
                     )
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .width(30.dp)
                             .padding(8.dp)
-                            .background(color = Color.White)
+                            .background(color = roadLineColor)
                     )
 
                     Box(
@@ -241,7 +259,7 @@ fun EqualDivide() {
                             .weight(1f)
                             .width(30.dp)
                             .padding(8.dp)
-                            .background(color = Color.White)
+                            .background(color = roadLineColor)
                     )
                 }
                 Box(

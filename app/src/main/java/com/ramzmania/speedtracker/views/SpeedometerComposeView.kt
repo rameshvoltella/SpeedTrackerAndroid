@@ -23,7 +23,7 @@ import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
 
 @Composable
 fun SpeedometerComposeView(
-    progress: Int, speedoMeterRange: Int = 250,
+    progress: Int, speedoMeterRange: Int = 220,
     startColorRange: Color = Color(0xFF388E3C),
     startColorRangeSecondary: Color =Color(0xFFC8E6C9),
     mediumColorRange: Color = Color(0xFFF57C00),
@@ -32,7 +32,8 @@ fun SpeedometerComposeView(
     endColorRangeSecondary: Color = Color(0xFFC8E6C9),
     needleColor: Color = Color.Black,
     speedTextColor: Color = Color.Black,
-    movingSpeedTextColor: Color = Color.Black
+    movingSpeedTextColor: Color = Color.Black,
+    speedText:String="0 Km/Hr"
 ) {
     val arcDegrees = 275
     val startArcAngle = 135f
@@ -216,16 +217,16 @@ fun SpeedometerComposeView(
                     canvas.restore()
                 }
                 // Draw text at the center of the view
-                val text = calculateRangeValue(progress,(1.0f * 55).toInt(),speedoMeterRange).toString()+" km/Hr" // Replace with your desired text
+//                val text = calculateRangeValue(progress,(1.0f * 55).toInt(),speedoMeterRange).toString()+" km/Hr" // Replace with your desired text
                 val textPaint = android.graphics.Paint().apply {
                     color = movingSpeedTextColor.toArgb()
                     textSize = 80f // Adjust text size as needed
                     isFakeBoldText = true // Make the text bold
                 }
-                val textWidth = textPaint.measureText(text)
+                val textWidth = textPaint.measureText(speedText)
                 val textX = (drawContext.size.width - textWidth) / 2 // Center the text horizontally
                 val textY = drawContext.size.height * 0.9f // Position the text below the drawing
-                canvas.nativeCanvas.drawText(text, textX, textY, textPaint)
+                canvas.nativeCanvas.drawText(speedText, textX, textY, textPaint)
                 conterEnter=0;
             }
         }
@@ -238,7 +239,11 @@ fun calculateRangeValue(seekBarValue: Int, seekBarMaxValue: Int, rangeMaxValue: 
 @Composable
 fun GreetingPreview() {
     SpeedTrackerTheme {
-        SpeedometerComposeView(progress = 55, speedoMeterRange = 220)
+        val data = calculateSeekBarValue(22.0, 220, 55)
+        SpeedometerComposeView(progress = data, speedoMeterRange = 220)
     }
+}
+fun calculateSeekBarValue(rangeValue: Double, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
+    return ((rangeValue.toFloat() / rangeMaxValue.toFloat()) * seekBarMaxValue).toInt()
 }
 

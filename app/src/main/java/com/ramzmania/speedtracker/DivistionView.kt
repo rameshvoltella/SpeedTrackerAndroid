@@ -66,6 +66,7 @@ fun EqualDivide() {
 //    val speedProgress = remember { mutableStateOf(0) }
     var targetValue by remember { mutableStateOf(0f) }
     var progress = remember(targetValue) { Animatable(initialValue = 0f) }
+
     var targetAnimationValue by remember {
         mutableStateOf(10f)
     }
@@ -74,7 +75,7 @@ fun EqualDivide() {
         mutableStateOf("Pedal..")
     }
     var speedtext by remember {
-        mutableStateOf("0km")
+        mutableStateOf("0 Km/Hr")
     }
 
     var roadLineColor by remember {
@@ -106,10 +107,10 @@ fun EqualDivide() {
 
                     // Calculate speed
                     val speedKmH = speed * 3.6 // Convert speed to km/h
-
-                    speedtext=String.format("%.1f", speed * 3.6)+" km/hr"
-                    if (speedKmH <= 250) {
-                            val data = calculateSeekBarValue(speedKmH, 250, 55)
+//                    val speedKmH = 210.0// Convert speed to km/h
+                    speedtext=String.format("%.1f", speed * 3.6)+" Km/Hr"
+                    if (speedKmH <= 220) {
+                            val data = calculateSeekBarValue(speedKmH, 220, 55)
                             scope.launch {
                                 progress.animateTo(
                                     targetValue = data.toFloat(),
@@ -215,14 +216,15 @@ fun EqualDivide() {
                     speedTextColor = colorResource(
                         id = R.color.white,
                     ),
-                    movingSpeedTextColor = Color.White
+                    movingSpeedTextColor = Color.White,
+                            speedText=speedtext
                 )
-                Box(
+               /* Box(
                     modifier = Modifier.fillMaxSize().padding(90.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = speedtext, fontSize = 20.sp)
-                }
+                }*/
             }
 
             /*Button(

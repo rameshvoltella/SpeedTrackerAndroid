@@ -52,7 +52,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.ramzmania.speedtracker.constant.MAX_SPEED
 import com.ramzmania.speedtracker.views.SpeedometerComposeView
-import com.ramzmania.speedtracker.views.speedoMeterRange
 import kotlinx.coroutines.launch
 
 @Composable
@@ -66,7 +65,7 @@ fun EqualDivide() {
     }
 //    val speedProgress = remember { mutableStateOf(0) }
     var targetValue by remember { mutableStateOf(0f) }
-    var progress = remember(targetValue) { Animatable(initialValue = 0f) }
+    var speedOver = remember(targetValue) { Animatable(initialValue = 0f) }
 
     var targetAnimationValue by remember {
         mutableStateOf(10f)
@@ -107,35 +106,35 @@ fun EqualDivide() {
                     val speed = location.speed // Speed in meters/second
 
                     // Calculate speed
-//                    val speedKmH = speed * 3.6 // Convert speed to km/h
+                    val speedKmH = speed * 3.6 // Convert speed to km/h
 //                    val speedKmH = 210.0// Convert speed to km/h
-                    val speedKmH=390
+//                    val speedKmH=55
+//                    val speedKmH=200
                     speedtext=String.format("%.1f", speed * 3.6)+" Km/Hr"
-                    if (speedKmH <= MAX_SPEED) {
-                            val data = seekPercentage(speedKmH, 55, MAX_SPEED)
+//                            val data = seekPercentage(speedKmH.toInt(), 55, MAX_SPEED)
                             scope.launch {
-                                progress.animateTo(
-                                    targetValue = data.toFloat(),
+                                speedOver.animateTo(
+                                    targetValue = speedKmH.toFloat(),
                                     animationSpec = tween(
                                         durationMillis = 1000,
                                         easing = FastOutLinearInEasing
                                     )
                                 )
                             }
-                        if(data<1)
+                        if(speedKmH<1)
                         {
                             roadLineColor= Color.White
                             speedMessage="Pedal.."
                             targetAnimationValue=10f
                         }
-                        else if(speedKmH<20)
+                        else if(speedKmH<80)
                         {
                             roadLineColor= Color(0xFF388E3C)
                             speedMessage="Nice.."
                             targetAnimationValue=30f
 
                         }
-                        else if(speedKmH<40)
+                        else if(speedKmH<90)
                         {
                             roadLineColor= Color(0xFFF57C00)
                             speedMessage="Watch out.."
@@ -160,7 +159,7 @@ fun EqualDivide() {
 //                                )
 //                            )
 //                        }
-                    }
+
 
 
 
@@ -213,8 +212,8 @@ fun EqualDivide() {
 
             ) {
                 SpeedometerComposeView(
-                    speedoMeterRange=MAX_SPEED,
-                    progress = progress.value.toInt(),
+                    speedMeterRange=MAX_SPEED,
+                    rangeValue = speedOver.value.toInt(),
                     needleColor = Color.Red,
                     speedTextColor = colorResource(
                         id = R.color.white,

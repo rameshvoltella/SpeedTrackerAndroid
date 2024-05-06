@@ -2,5 +2,5 @@ package com.ramzmania.speedtracker
 
 object constant {
 
-    const val MAX_SPEED:Int=390
+    const val MAX_SPEED:Int=220
 }

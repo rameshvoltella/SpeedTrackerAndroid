@@ -23,7 +23,8 @@ import com.ramzmania.speedtracker.ui.theme.SpeedTrackerTheme
 
 @Composable
 fun SpeedometerComposeView(
-    progress: Int, speedoMeterRange: Int = 220,
+    rangeValue: Int=0,
+    speedMeterRange: Int = 220,
     startColorRange: Color = Color(0xFF388E3C),
     startColorRangeSecondary: Color =Color(0xFFC8E6C9),
     mediumColorRange: Color = Color(0xFFF57C00),
@@ -46,10 +47,17 @@ fun SpeedometerComposeView(
 //    val adjustedPoints = (0 until numberOfPoints - 1).map { it * step } + speedoMeterRange
 // Adjust the values to end with the last digit 0
 //    val adjustedPoints = points.map { if (it < speedoMeterRange) it / 10 * 10 else speedoMeterRange }
-    val adjustedPoints = mutableListOf<Int>()
+//    val adjustedPoints = mutableListOf<Int>()
+    val progress = if(rangeValue>speedMeterRange)
+    {
+        seekPercentage(speedMeterRange,55,speedMeterRange)
+    }else
+    {
+        seekPercentage(rangeValue,55,speedMeterRange)
 
+    }
     // Loop through the points and extract the values of every fifth point
-    for (i in 0 until numberOfMarkers) {
+   /* for (i in 0 until numberOfMarkers) {
         if ((i + 1) % 5 == 0) {  // Check if the point is a multiple of 5
             val pointValue = ((i + 1) * (speedoMeterRange.toDouble() / numberOfMarkers)).toInt()
             adjustedPoints.add(pointValue)
@@ -57,7 +65,12 @@ fun SpeedometerComposeView(
     }
 
     // Adjusting the list to start from index 0
-    adjustedPoints.add(0, 0)
+    adjustedPoints.add(0, 0)*/
+    val adjustedPoints = (5..numberOfMarkers step 5)
+        .map { (it * (speedMeterRange.toDouble() / numberOfMarkers)).toInt() }
+        .toMutableList() // Convert to mutable list
+        .apply { add(0, 0) } // Add zero value at index 0
+
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
@@ -253,9 +266,9 @@ fun GreetingPreview() {
     SpeedTrackerTheme {
 //        val data = calculateSeekBarValue(200.0, 250, 55)
 //        val seekBarPosition = calculateSeekBarPosition(210, seekBarMaxValue)
-        val totalValue = 250
-        val numPoints = 55
-        val givenValue = 220
+        val totalValue = 800
+//        val numPoints = 55
+//        val givenValue = 220
 
        /* // Calculate the value of each point
         val pointValue = totalValue.toDouble() / numPoints
@@ -273,12 +286,12 @@ fun GreetingPreview() {
         } else {
             pointIndex + 1
         }*/
-        val pointValue = totalValue.toDouble() / numPoints
-        val pointIndex = (givenValue / pointValue).toInt()
+//        val pointValue = totalValue.toDouble() / numPoints
+//        val pointIndex = (givenValue / pointValue).toInt()
+//
+//        val closestPointIndex = if (givenValue % pointValue < pointValue / 2) pointIndex else pointIndex + 1
 
-        val closestPointIndex = if (givenValue % pointValue < pointValue / 2) pointIndex else pointIndex + 1
-
-        SpeedometerComposeView(progress = closestPointIndex, speedoMeterRange = totalValue)
+        SpeedometerComposeView(rangeValue = 363, speedMeterRange = totalValue)
     }
 }
 //fun calculateSeekBarValue(rangeValue: Double, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
@@ -302,4 +315,12 @@ fun calculateSeekBarPosition(value: Int, maxValue: Int): Int {
     } else {
         (position.toDouble() / points.lastIndex * maxValue).toInt()
     }
+}
+fun seekPercentage(rangeValue: Int, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
+    val pointValue = seekBarMaxValue.toDouble() / rangeMaxValue
+    val pointIndex = (rangeValue / pointValue).toInt()
+
+    val closestPointIndex = if (rangeValue % pointValue < pointValue / 2) pointIndex else pointIndex + 1
+    return closestPointIndex
+
 }

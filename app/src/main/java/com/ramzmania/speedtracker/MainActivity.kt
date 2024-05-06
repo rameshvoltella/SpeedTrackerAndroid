@@ -241,7 +241,7 @@ fun SpeedoMeterMainScreen() {
                 .wrapContentSize(Alignment.Center)
         ) {
             Log.d("sadakk",""+progress.value.toInt())
-            SpeedometerComposeView(progress = progress.value.toInt(), needleColor = colorResource(id = R.color.purple_200), speedTextColor = colorResource(
+            SpeedometerComposeView( needleColor = colorResource(id = R.color.purple_200), speedTextColor = colorResource(
                 id = R.color.teal_200,
             ),movingSpeedTextColor= Color.White
             )

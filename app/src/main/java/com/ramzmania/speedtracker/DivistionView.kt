@@ -37,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -51,7 +50,9 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.ramzmania.speedtracker.constant.MAX_SPEED
 import com.ramzmania.speedtracker.views.SpeedometerComposeView
+import com.ramzmania.speedtracker.views.speedoMeterRange
 import kotlinx.coroutines.launch
 
 @Composable
@@ -109,8 +110,8 @@ fun EqualDivide() {
                     val speedKmH = speed * 3.6 // Convert speed to km/h
 //                    val speedKmH = 210.0// Convert speed to km/h
                     speedtext=String.format("%.1f", speed * 3.6)+" Km/Hr"
-                    if (speedKmH <= 220) {
-                            val data = calculateSeekBarValue(speedKmH, 220, 55)
+                    if (speedKmH <= MAX_SPEED) {
+                            val data = seekPercentage(speedKmH.toInt(), MAX_SPEED, 55)
                             scope.launch {
                                 progress.animateTo(
                                     targetValue = data.toFloat(),
@@ -211,6 +212,7 @@ fun EqualDivide() {
 
             ) {
                 SpeedometerComposeView(
+                    speedoMeterRange=MAX_SPEED,
                     progress = progress.value.toInt(),
                     needleColor = Color.Red,
                     speedTextColor = colorResource(
@@ -400,7 +402,18 @@ fun EqualDivide() {
 }
 
 fun calculateSeekBarValue(rangeValue: Double, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
+
+
     return ((rangeValue.toFloat() / rangeMaxValue.toFloat()) * seekBarMaxValue).toInt()
+}
+
+fun seekPercentage(rangeValue: Int, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
+    val pointValue = seekBarMaxValue.toDouble() / rangeMaxValue
+    val pointIndex = (rangeValue / pointValue).toInt()
+
+    val closestPointIndex = if (rangeValue % pointValue < pointValue / 2) pointIndex else pointIndex + 1
+    return closestPointIndex
+
 }
 
 @Preview

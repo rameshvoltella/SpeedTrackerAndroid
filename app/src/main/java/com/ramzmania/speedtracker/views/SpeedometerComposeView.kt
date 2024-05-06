@@ -40,12 +40,24 @@ fun SpeedometerComposeView(
     val startStepAngle = -45
     val numberOfMarkers = 55
     val degreesMarkerStep = arcDegrees / numberOfMarkers
-    val numberOfPoints = 12
-    val step = speedoMeterRange / (numberOfPoints - 1) // Adjust for 1 less step
-    val points = (0 until numberOfPoints - 1).map { it * step } + speedoMeterRange // Add the range as the last point
-
+//    val numberOfPoints = 12
+//    val step = 20// Adjust for 1 less step
+//    val points = (0 until numberOfPoints - 1).map { it * step } + speedoMeterRange // Add the range as the last point
+//    val adjustedPoints = (0 until numberOfPoints - 1).map { it * step } + speedoMeterRange
 // Adjust the values to end with the last digit 0
-    val adjustedPoints = points.map { if (it < speedoMeterRange) it / 10 * 10 else speedoMeterRange }
+//    val adjustedPoints = points.map { if (it < speedoMeterRange) it / 10 * 10 else speedoMeterRange }
+    val adjustedPoints = mutableListOf<Int>()
+
+    // Loop through the points and extract the values of every fifth point
+    for (i in 0 until numberOfMarkers) {
+        if ((i + 1) % 5 == 0) {  // Check if the point is a multiple of 5
+            val pointValue = ((i + 1) * (speedoMeterRange.toDouble() / numberOfMarkers)).toInt()
+            adjustedPoints.add(pointValue)
+        }
+    }
+
+    // Adjusting the list to start from index 0
+    adjustedPoints.add(0, 0)
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
@@ -239,11 +251,55 @@ fun calculateRangeValue(seekBarValue: Int, seekBarMaxValue: Int, rangeMaxValue: 
 @Composable
 fun GreetingPreview() {
     SpeedTrackerTheme {
-        val data = calculateSeekBarValue(22.0, 220, 55)
-        SpeedometerComposeView(progress = data, speedoMeterRange = 220)
+//        val data = calculateSeekBarValue(200.0, 250, 55)
+//        val seekBarPosition = calculateSeekBarPosition(210, seekBarMaxValue)
+        val totalValue = 399
+        val numPoints = 55
+        val givenValue = 220
+
+       /* // Calculate the value of each point
+        val pointValue = totalValue.toDouble() / numPoints
+
+        // Calculate the point index where the given value lies
+        val pointIndex = (givenValue / pointValue).toInt()
+
+        // Calculate the values of the two neighboring points
+        val lowerPointValue = pointIndex * pointValue
+        val upperPointValue = (pointIndex + 1) * pointValue
+
+        // Choose the closest point index to the given value
+        val closestPointIndex = if (givenValue - lowerPointValue < upperPointValue - givenValue) {
+            pointIndex
+        } else {
+            pointIndex + 1
+        }*/
+        val pointValue = totalValue.toDouble() / numPoints
+        val pointIndex = (givenValue / pointValue).toInt()
+
+        val closestPointIndex = if (givenValue % pointValue < pointValue / 2) pointIndex else pointIndex + 1
+
+        SpeedometerComposeView(progress = closestPointIndex, speedoMeterRange = totalValue)
     }
 }
+//fun calculateSeekBarValue(rangeValue: Double, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
+//    return ((rangeValue.toFloat() / rangeMaxValue.toFloat()) * seekBarMaxValue).toInt()
+//}
 fun calculateSeekBarValue(rangeValue: Double, rangeMaxValue: Int, seekBarMaxValue: Int): Int {
-    return ((rangeValue.toFloat() / rangeMaxValue.toFloat()) * seekBarMaxValue).toInt()
+    val step = rangeMaxValue / seekBarMaxValue.toDouble()
+    return (rangeValue / step).toInt()
 }
+val numberOfPoints = 12 // Or any desired number of points
+val step = 20 // Or 30
+val speedoMeterRange = 250 // Or any desired value for the last point
+val seekBarMaxValue = 55 // Maximum value for the seek bar
 
+val points = (0 until numberOfPoints - 1).map { it * step } + speedoMeterRange
+
+fun calculateSeekBarPosition(value: Int, maxValue: Int): Int {
+    val position = points.indexOfFirst { it >= value }
+    return if (position == -1) {
+        maxValue // If value is greater than the maximum value, return maxValue
+    } else {
+        (position.toDouble() / points.lastIndex * maxValue).toInt()
+    }
+}

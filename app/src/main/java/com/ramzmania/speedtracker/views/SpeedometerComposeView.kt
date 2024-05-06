@@ -253,7 +253,7 @@ fun GreetingPreview() {
     SpeedTrackerTheme {
 //        val data = calculateSeekBarValue(200.0, 250, 55)
 //        val seekBarPosition = calculateSeekBarPosition(210, seekBarMaxValue)
-        val totalValue = 399
+        val totalValue = 250
         val numPoints = 55
         val givenValue = 220
 

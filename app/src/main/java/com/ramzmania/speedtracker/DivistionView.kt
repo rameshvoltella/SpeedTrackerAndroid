@@ -107,11 +107,12 @@ fun EqualDivide() {
                     val speed = location.speed // Speed in meters/second
 
                     // Calculate speed
-                    val speedKmH = speed * 3.6 // Convert speed to km/h
+//                    val speedKmH = speed * 3.6 // Convert speed to km/h
 //                    val speedKmH = 210.0// Convert speed to km/h
+                    val speedKmH=390
                     speedtext=String.format("%.1f", speed * 3.6)+" Km/Hr"
                     if (speedKmH <= MAX_SPEED) {
-                            val data = seekPercentage(speedKmH.toInt(), MAX_SPEED, 55)
+                            val data = seekPercentage(speedKmH, 55, MAX_SPEED)
                             scope.launch {
                                 progress.animateTo(
                                     targetValue = data.toFloat(),
